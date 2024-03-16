@@ -1,0 +1,122 @@
+6.Residuals:
+
+library(ggplot2)
+
+x <- c(1, 2, 3, 4, 5)
+y <- c(2, 5, 3, 8, 7)
+
+model <- lm(y ~ x)
+
+residuals <- resid(model)
+
+ggplot(data.frame(Fitted = fitted(model), Residuals = residuals), aes(x = Fitted, y = Residuals)) + geom_point() +geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+
+ labs(title = "Residuals vs Fitted Values", x = "Fitted Values", y = "Residuals")
+
+shapiro_test <- shapiro.test(residuals)
+
+print(shapiro_test)
+
+qqnorm(residuals)
+
+qqline(residuals)
+
+ 
+
+7.Probability Distribution:
+
+library(ggplot2)
+
+library(reshape2)
+
+generate_distributions <- function(n, mean, sd, lambda) {
+
+  normal_data <- rnorm(n, mean, sd)
+
+  uniform_data <- runif(n)
+
+  exponential_data <- rexp(n, lambda)
+
+  poisson_data <- rpois(n, lambda)
+
+  data <- data.frame(Normal = normal_data,
+
+                     Uniform = uniform_data,
+
+                     Exponential = exponential_data,
+
+                     Poisson = poisson_data) 
+
+  return(data)
+
+}
+
+n <- 1000
+
+mean <- 0
+
+sd <- 1
+
+lambda <- 1
+
+distributions <- generate_distributions(n, mean, sd, lambda)
+
+distributions_melted <- melt(distributions)
+
+ggplot(distributions_melted, aes(x = value, fill = variable)) +
+
+  geom_density(alpha = 0.5) +
+
+  facet_wrap(~ variable, scales = "free") +
+
+  labs(title = "Probability Distributions",
+
+       x = "Value",
+
+       y = "Density")
+
+ 
+
+8.One Way anova
+
+method_A <- c(80, 85, 88, 92, 95)
+
+method_B <- c(75, 78, 82, 87, 90)
+
+method_C <- c(70, 72, 75, 80, 85)
+
+data <- data.frame(
+
+  method = factor(rep(c("A", "B", "C"), each = 5)),
+
+  score = c(method_A, method_B, method_C)
+
+)
+
+str(data)
+
+anova_result <- aov(score ~ method, data = data)
+
+summary(anova_result)
+
+tukey_result <- TukeyHSD(anova_result)
+
+print(tukey_result)
+
+9.Time Series
+
+library(forecast)
+
+data <- read.csv("min_temp_data.csv")
+
+data$date <- as.Date(data$date)
+
+plot(data$date, data$min_temperature, type = "l", xlab = "Date", ylab = "Minimum Temperature", main = "Time Series Plot")
+
+arima_model <- auto.arima(data$min_temperature)
+
+summary(arima_model)
+
+future_forecast <- forecast(arima_model, h = 30) # Forecasting 30 future values (about a month)
+
+plot(future_forecast, main = "Forecasted Minimum Temperatures")
